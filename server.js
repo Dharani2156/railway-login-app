@@ -8,17 +8,24 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+console.log("Connecting to MySQL with:", {
+  host: process.env.MYSQLHOST,
+  port: process.env.MYSQLPORT,
+  user: process.env.MYSQLUSER,
+  password: process.env.MYSQLPASSWORD,
+  database: process.env.MYSQLDATABASE
+});
 
 // ✅ MySQL setup — replace with Railway credentials when deploying
 const pool = mysql.createPool({
-    host: process.env.MYSQLHOST,
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: Number(process.env.MYSQLPORT),
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+  host: process.env.MYSQLHOST || 'localhost',             // must come from Railway
+  user: process.env.MYSQLUSER || 'root',
+  password: process.env.MYSQLPASSWORD || '',
+  database: process.env.MYSQLDATABASE || '',
+  port: Number(process.env.MYSQLPORT) || 3306,            // force to number
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 }).promise();
 
 // Signup route
