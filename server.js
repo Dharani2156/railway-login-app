@@ -11,10 +11,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // ✅ MySQL setup — replace with Railway credentials when deploying
 const pool = mysql.createPool({
-    host: 'your-mysql-host',
-    user: 'your-mysql-user',
-    password: 'your-password',
-    database: 'your-database-name',
+    host: process.env.MYSQLHOST,
+    user: process.env.MYSQLUSER,
+    password: process.env.MYSQLPASSWORD,
+    database: process.env.MYSQLDATABASE,
+    port: process.env.MYSQLPORT,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
