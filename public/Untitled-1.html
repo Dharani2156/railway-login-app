@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scientific Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: linear-gradient(135deg, #232526, #414345);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .hidden {
+            display: none !important;
+        }
+.calculator {
+    background: #222;
+    border-radius: 20px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    padding: 30px 25px;
+    width: 370px;
+}
+.modal-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+.modal {
+    background: #222;
+    padding: 32px 28px 24px 28px;
+    border-radius: 14px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+    min-width: 320px;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.modal input {
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 10px;
+    font-size: 1em;
+    background: #333;
+    color: #fff;
+}
+.modal button {
+    background: #0ff;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 0;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 6px;
+}
+.modal .switch-link {
+    color: #0ff;
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.95em;
+    margin-top: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+}
+.modal .error {
+    color: #ff1744;
+    font-size: 0.95em;
+    margin-bottom: 4px;
+}
+.display {
+    color: #0ff;
+    font-size: 2.2em;
+    border-radius: 10px;
+    padding: 18px 12px;
+    text-align: right;
+    margin-bottom: 18px;
+    min-height: 40px;
+    word-break: break-all;
+    letter-spacing: 1px;
+}
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            gap: 12px;
+        }
+        button {
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            padding: 18px 0;
+            cursor: pointer;
+            transition: background 0.2s;
+            outline: none;
+        }
+        button:active {
+            background: #0ff;
+            color: #222;
+        }
+        .btn-func { color: #0ff; }
+        .btn-op { color: #ff9800; }
+        .btn-eq { background: #0ff; color: #222; font-weight: bold; }
+        .btn-ac { background: #ff1744; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div id="display" class="display">0</div>
+        <div class="buttons">
+            <button class="btn-func" onclick="inputFunc('sin')">sin</button>
+            <button class="btn-func" onclick="inputFunc('cos')">cos</button>
+            <button class="btn-func" onclick="inputFunc('tan')">tan</button>
+            <button class="btn-func" onclick="inputFunc('log')">log</button>
+            <button class="btn-ac" onclick="clearDisplay()">AC</button>
+            
+            <button class="btn-func" onclick="inputFunc('asin')">asin</button>
+            <button class="btn-func" onclick="inputFunc('acos')">acos</button>
+            <button class="btn-func" onclick="inputFunc('atan')">atan</button>
+            <button class="btn-func" onclick="inputFunc('ln')">ln</button>
+            <button class="btn-op" onclick="inputOp('^')">^</button>
+            
+            <button onclick="inputNum('7')">7</button>
+            <button onclick="inputNum('8')">8</button>
+            <button onclick="inputNum('9')">9</button>
+            <button class="btn-op" onclick="inputOp('/')">÷</button>
+            <button class="btn-func" onclick="inputFunc('sqrt')">√</button>
+            
+            <button onclick="inputNum('4')">4</button>
+            <button onclick="inputNum('5')">5</button>
+            <button onclick="inputNum('6')">6</button>
+            <button class="btn-op" onclick="inputOp('*')">×</button>
+            <button class="btn-func" onclick="inputFunc('exp')">exp</button>
+            
+            <button onclick="inputNum('1')">1</button>
+            <button onclick="inputNum('2')">2</button>
+            <button onclick="inputNum('3')">3</button>
+            <button class="btn-op" onclick="inputOp('-')">−</button>
+            <button class="btn-func" onclick="inputConst('π')">π</button>
+            
+            <button onclick="inputNum('0')">0</button>
+            <button onclick="inputDot()">.</button>
+            <button onclick="backspace()">⌫</button>
+            <button class="btn-op" onclick="inputOp('+')">+</button>
+            <button class="btn-func" onclick="inputConst('e')">e</button>
+            
+            <button onclick="inputParen('(')">(</button>
+            <button onclick="inputParen(')')">)</button>
+            <button class="btn-eq" style="grid-column: span 3;" onclick="calculate()">=</button>
+        </div>
+    </div>
+    <script>
+        let display = document.getElementById('display');
+        let expr = '';
+
+        function updateDisplay() {
+            display.textContent = expr || '0';
+        }
+
+        function inputNum(num) {
+            expr += num;
+            updateDisplay();
+        }
+
+        function inputDot() {
+            expr += '.';
+            updateDisplay();
+        }
+
+        function inputOp(op) {
+            if (expr && !/[+\-*/^]$/.test(expr)) {
+                expr += op;
+                updateDisplay();
+            }
+        }
+
+        function inputFunc(func) {
+            if (func === 'sqrt') {
+                expr += '√(';
+            } else if (func === 'ln') {
+                expr += 'ln(';
+            } else if (func === 'log') {
+                expr += 'log(';
+            } else if (func === 'exp') {
+                expr += 'exp(';
+            } else if (func === 'sin' || func === 'cos' || func === 'tan' ||
+                                 func === 'asin' || func === 'acos' || func === 'atan') {
+                expr += func + '(';
+            }
+            updateDisplay();
+        }
+
+        function inputConst(constant) {
+            if (constant === 'π') {
+                expr += 'π';
+            } else if (constant === 'e') {
+                expr += 'e';
+            }
+            updateDisplay();
+        }
+
+        function inputParen(paren) {
+            expr += paren;
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            expr = '';
+            updateDisplay();
+        }
+
+        function backspace() {
+            expr = expr.slice(0, -1);
+            updateDisplay();
+        }
+
+        function calculate() {
+            try {
+                let replaced = expr
+                    .replace(/π/g, 'Math.PI')
+                    .replace(/e/g, 'Math.E')
+                    .replace(/√\(/g, 'Math.sqrt(')
+                    .replace(/ln\(/g, 'Math.log(')
+                    .replace(/log\(/g, 'Math.log10(')
+                    .replace(/exp\(/g, 'Math.exp(')
+                    .replace(/sin\(/g, 'Math.sin(')
+                    .replace(/cos\(/g, 'Math.cos(')
+                    .replace(/tan\(/g, 'Math.tan(')
+                    .replace(/asin\(/g, 'Math.asin(')
+                    .replace(/acos\(/g, 'Math.acos(')
+                    .replace(/atan\(/g, 'Math.atan(')
+                    .replace(/\^/g, '**');
+                // Evaluate safely
+                let result = Function('"use strict";return (' + replaced + ')')();
+                if (typeof result === 'number' && isFinite(result)) {
+                    expr = result.toString();
+                } else {
+                    expr = 'Error';
+                }
+            } catch {
+                expr = 'Error';
+            }
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
